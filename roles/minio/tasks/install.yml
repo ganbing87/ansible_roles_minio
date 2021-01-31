@@ -1,0 +1,41 @@
+- name: Copy install packages
+  copy:
+    src: "{{ local_packages_dir }}/minio-{{ minio_version }}.tar.gz"
+    dest: "{{ remote_packages_dir }}/minio-{{ minio_version }}.tar.gz"
+
+- name: Unpack archive
+  unarchive:
+    remote_src: yes
+    src: "{{ remote_packages_dir }}/minio-{{ minio_version }}.tar.gz"
+    dest: "{{ install_dir }}"
+    creates: "{{ minio_base_dir }}"
+
+- name: create soft_link
+  file:
+    src: "{{ minio_base_dir }}"
+    dest: "{{ softlink_dir }}/minio"
+    state: link
+
+- name: Create dirs
+  file:
+    path: "{{ data_dir_item }}"
+    state: directory
+    recurse: yes
+  with_items:
+    - "{{ minio_data_dir}}"
+    - "{{ minio_log_dir }}"
+  loop_control:
+    loop_var: data_dir_item
+
+- name: Touch minio log file
+  file:
+    path: "{{ minio_log_file }}"
+    state: touch
+
+- name: Check if systemd exists
+  stat: path=/usr/lib/systemd/system/
+  register: systemd_check
+
+- name: Add systemctl start service file
+  template: src=minio.service.j2 dest=/usr/lib/systemd/system/minio.service mode=0644
+  when: "systemd_check.stat.exists == true"

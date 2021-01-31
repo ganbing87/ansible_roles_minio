@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export MINIO_ACCESS_KEY={{ minio_access_key }}
+export MINIO_SECRET_KEY={{ minio_secret_key }}
+export MINIO_HTTP_TRACE={{ minio_log_file }}
+
+nohup {{ softlink_dir }}/minio/bin/minio server --address :{{ minio_port }} \
+--config-dir {{ softlink_dir }}/minio/config/ \
+{% for server in play_hosts %}
+{% for dir in minio_data_dir %}
+http://{{ server }}{{ dir }} \
+{% endfor %}
+{% endfor %}
+>> {{ minio_log_file }} 2>&1 &

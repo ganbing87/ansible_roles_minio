@@ -1,0 +1,13 @@
+- name: Create buckets for umap on minio
+  shell: "{{ softlink_dir }}/minio/bin/mc --config-dir ~{{ appuser }}/.mc mb --ignore-existing myminio/{{ bucket_item }}"
+  with_items:
+    - "{{ test_minio_buckets }}"
+  loop_control:
+    loop_var: bucket_item
+
+- name: Set policy on buckets
+  shell: "{{ softlink_dir }}/minio/bin/mc --config-dir ~{{ appuser }}/.mc policy set download myminio/{{ bucket_item }}"
+  with_items:
+    - "{{ test_minio_buckets }}"
+  loop_control:
+    loop_var: bucket_item

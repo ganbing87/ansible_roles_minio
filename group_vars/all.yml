@@ -1,0 +1,76 @@
+#--------------------Global Configuration-------------------------
+install_dir: "/export/server"
+softlink_dir: "/export"
+local_packages_dir: "/data/packages"
+remote_packages_dir: "/export/packages"
+java_home: "{{ softlink_dir }}/jdk"
+ssh_user: "root"
+appuser: "zhangsan"
+limit_nofile: "65536"
+limit_nproc: "131072"
+domain: "ganbing.cnn"
+
+
+#--------------------jdk configuration-------------------------
+jdk8_version: "202"
+
+#--------------------Minio Configuration-------------------------
+minio_version: "20201110"
+#minio数据目录,最少使用4个目录来组成一个minio集群,可以选用2台机器,每台使用2个目录
+minio_data_dir:
+  - /export/data/minio/data1
+  - /export/data/minio/data2
+  - /export/data/minio/data3
+  - /export/data/minio/data4
+minio_log_dir: "/export/log/minio"
+minio_log_file: "{{ minio_log_dir }}/minio.log"
+#minio_access_key: "Q3AM3UQ867SPQQA43P2F"
+#minio_secret_key: "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+minio_port: 9000
+minio_fqdn_hostname: minio
+
+#--------------------system configuration-------------------------
+kernel_config:
+   - name: net.ipv4.ip_forward
+     value: 1
+   - name: net.ipv4.tcp_tw_recycle
+     value: 0
+   - name: vm.swappiness
+     value: 0
+   - name: vm.overcommit_memory
+     value: 1
+   - name: vm.panic_on_oom
+     value: 0
+   - name: vm.max_map_count
+     value: 262144
+   - name: fs.inotify.max_user_instances
+     value: 8192
+   - name: fs.inotify.max_user_watches
+     value: 1048576
+   - name: fs.file-max
+     value: 52706963
+   - name: net.ipv6.conf.all.disable_ipv6
+     value: 1
+   - name: net.ipv6.conf.default.disable_ipv6
+     value: 1
+   - name: net.ipv6.conf.lo.disable_ipv6
+     value: 1
+
+ulmit_config:
+  - limit_domain: "*"
+    limit_type: "soft"
+    limit_item: "nofile"
+    limit_value: "{{ limit_nofile }}"
+  - limit_domain: "*"
+    limit_type: "hard"
+    limit_item: "nofile"
+    limit_value: "{{ limit_nofile }}"
+  - limit_domain: "*"
+    limit_type: "soft"
+    limit_item: "nproc"
+    limit_value: "{{ limit_nproc }}"
+  - limit_domain: "*"
+    limit_type: "hard"
+    limit_item: "nproc"
+    limit_value: "{{ limit_nproc }}"
+

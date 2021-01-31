@@ -1,0 +1,34 @@
+- name: Configure minio start.sh
+  template:
+    src: start.sh.j2
+    dest: "{{ softlink_dir }}/minio/bin/start.sh"
+    mode: 0755
+
+- name: Change ownership of mc client config
+  file:
+    path: "~{{ appuser }}/.mc"
+    state: directory
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+    recurse: yes
+
+- name: Configure mc client config.json
+  template:
+    src: config.json.j2
+    dest: "~{{ appuser }}/.mc/config.json"
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+
+- name: Change ownership of minio work|log|data dir
+  file:
+    path: "{{ minio_item }}"
+    state: directory
+    owner: "{{ appuser }}"
+    group: "{{ appuser }}"
+    recurse: yes
+  with_items:
+    - "{{ minio_base_dir }}"
+    - "{{ minio_log_dir }}"
+    - "{{ minio_data_dir }}"
+  loop_control:
+    loop_var: minio_item

@@ -1,0 +1,17 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=minio
+After=network.target
+
+[Service]
+Type=forking
+PrivateTmp=true
+User={{ appuser }}
+Group={{ appuser }}
+LimitNOFILE={{ limit_nofile }}
+LimitNPROC={{ limit_nproc }}
+ExecStart={{ softlink_dir }}/minio/bin/start.sh
+
+[Install]
+WantedBy=multi-user.target

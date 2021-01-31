@@ -1,0 +1,23 @@
+---
+- name: check minio service helath in consul
+  uri:
+    url: "http://{{ groups['consul'][0] }}:{{ consul_port }}/v1/agent/health/service/id/minio_{{ inventory_hostname }}?format=text"
+    method: GET
+    return_content: yes
+    status_code:
+      - 200
+      - 404
+      - 503
+  register: healthCheck
+
+- name: include tasks
+  include_tasks: "{{ item }}"
+  with_items:
+    - install.yml
+    - configure.yml
+    - start.yml
+  when: healthCheck.content != "passing"
+
+- name: include tasks
+  include_tasks: init_umap_minio_data.yml 
+  when: healthCheck.content != "passing" and inventory_hostname == groups['minio'][0] 
