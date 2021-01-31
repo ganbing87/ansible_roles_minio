@@ -116,7 +116,7 @@ ansible-galaxy collection install community.general
 
 ## 3、下载此项目
 ```
-git clone https://github.com/ganbing87/ansible_roles_consul.git
+git clone https://github.com/ganbing87/ansible_roles_minio.git
 ```
 
 ## 4、修改ansible.cfg
